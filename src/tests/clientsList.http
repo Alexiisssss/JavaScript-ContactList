@@ -1,0 +1,8 @@
+PATCH http://localhost:3000/api/clients/1698993611427
+
+  {
+    "name": "",
+    "lastName": "Иванович3",
+    "surname": "Иванов3",
+    "contacts": []
+  },

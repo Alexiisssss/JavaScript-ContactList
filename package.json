@@ -1,0 +1,21 @@
+﻿{
+  "name": "crm-backend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Бэкенд учебного CRM-приложения для курса по JavaScript",
+  "keywords": [],
+  "author": "Alexander Rogov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/judicator/sit-js-training-crm.git",
+    "directory": "crm-backend"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "generateDB": "node src/generateDB.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
