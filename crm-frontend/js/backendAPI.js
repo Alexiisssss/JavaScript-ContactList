@@ -1,7 +1,6 @@
-const apiURI = 'http://localhost:3000/api/clients';
+const apiURI = 'http://localhost:5003/api/clients';
 
-class BackendAPI
-{
+class BackendAPI {
     static async getByID(id) {
         const uri = `${apiURI}/${encodeURIComponent(id)}`;
         const response = await fetch(uri);
@@ -13,6 +12,7 @@ class BackendAPI
         return {};
     }
 
+    //получение списка
     static async getList(searchTerm = '') {
         const uri = `${apiURI}${searchTerm ? '?search=' + encodeURIComponent(searchTerm) : ''}`;
         const response = await fetch(uri);
@@ -44,6 +44,7 @@ class BackendAPI
         return [];
     }
 
+    //овновление 
     static async update(id, client) {
         const uri = `${apiURI}/${encodeURIComponent(id)}`;
         const response = await fetch(uri, {
@@ -58,6 +59,7 @@ class BackendAPI
         return [];
     }
 
+    //удаление
     static async delete(id) {
         const uri = `${apiURI}/${encodeURIComponent(id)}`;
         const response = await fetch(uri, {
@@ -68,6 +70,7 @@ class BackendAPI
         }
     }
 
+    //содание
     static async create(client) {
         const response = await fetch(apiURI, {
             'method': 'POST',

@@ -2,6 +2,7 @@ const searchDelay = 300;
 
 const clients = new Clients();
 
+//обновеление списка контактов
 async function updateClientsTable(searchTerm = '') {
     await clients.updateList(searchTerm);
     document.getElementById('clients-table-body').innerHTML = '';
@@ -17,6 +18,7 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
+//получение иконок
 function getContactIconImg(contactType) {
     switch (contactType) {
         case 'Телефон':
@@ -34,11 +36,13 @@ function getContactIconImg(contactType) {
 
 function setTooltips(query, options) {
     const elems = document.querySelectorAll(query);
-    for(let i = 0; i < elems.length; i++) {
+    for (let i = 0; i < elems.length; i++) {
         new bootstrap.Tooltip(elems[i], options);
     }
 }
 
+
+//добавление данных у контакта в модальном окне
 function addContactToList(query, idPrefix, contactType, contact) {
     if (contact.trim() === '') {
         alert('Заполните контактные данные!');
@@ -54,22 +58,26 @@ function addContactToList(query, idPrefix, contactType, contact) {
     tBody.append(tr);
 }
 
+
+//сортировка контактов по...
 function sortTable(sortType) {
-	if (clients.sortType === sortType) {
-		clients.sortOrder *= -1;
-	}
-	clients.sortType = sortType;
-   clients.sort();
-   document.getElementById('clients-table-body').innerHTML = '';
-   drawingTableOfClients(clients.getList());
+    if (clients.sortType === sortType) {
+        clients.sortOrder *= -1;
+    }
+    clients.sortType = sortType;
+    clients.sort();
+    document.getElementById('clients-table-body').innerHTML = '';
+    drawingTableOfClients(clients.getList());
 }
 
+
+//блок функций (обновления, удаления, добавления)
 document.addEventListener('DOMContentLoaded', () => {
     updateClientsTable(document.getElementById('search-input').value);
 
     function search(e) {
         if (this.timeoutID) {
-          clearTimeout(this.timeoutID);
+            clearTimeout(this.timeoutID);
         }
         this.timeoutID = setTimeout(updateClientsTable, searchDelay, e.currentTarget.value);
     }
@@ -96,7 +104,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 'lastName': document.getElementById('pNameUpd').value,
                 'contacts': []
             }
+
+            // Добавляем контакты в объект клиента
+            const contactsListUpdate = document.querySelectorAll('table#contacts-list-update-dialog tbody tr');
+            contactsListUpdate.forEach(tr => {
+                client.contacts.push({
+                    'type': tr.children[0].textContent,
+                    'value': tr.children[1].textContent
+                });
+            });
+
             const errors = await BackendAPI.update(id, client);
+
             document.getElementById('fNameUpd').classList.remove('is-invalid');
             document.getElementById('pNameUpd').classList.remove('is-invalid');
             document.getElementById('sNameUpd').classList.remove('is-invalid');
@@ -167,14 +186,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function drawingTableOfClients(clientsList) {
 
-	document.getElementById('sort-col0').classList.remove(...document.getElementById('sort-col0').classList);
-	document.getElementById('sort-col0').classList.add(...clients.getSortColClasses(0));
-   document.getElementById('sort-col1').classList.remove(...document.getElementById('sort-col1').classList);
-	document.getElementById('sort-col1').classList.add(...clients.getSortColClasses(1));
-   document.getElementById('sort-col2').classList.remove(...document.getElementById('sort-col2').classList);
-	document.getElementById('sort-col2').classList.add(...clients.getSortColClasses(2));
+//отрисовка клиентов в таблице
+function drawingTableOfClients(clientsList) {
+    document.getElementById('sort-col0').classList.remove(...document.getElementById('sort-col0').classList);
+    document.getElementById('sort-col0').classList.add(...clients.getSortColClasses(0));
+    document.getElementById('sort-col1').classList.remove(...document.getElementById('sort-col1').classList);
+    document.getElementById('sort-col1').classList.add(...clients.getSortColClasses(1));
+    document.getElementById('sort-col2').classList.remove(...document.getElementById('sort-col2').classList);
+    document.getElementById('sort-col2').classList.add(...clients.getSortColClasses(2));
 
     // цикл по всем клиентам
     for (let i = 0; i < clientsList.length; i++) {
@@ -253,6 +273,7 @@ function drawingTableOfClients(clientsList) {
                     break;
                 case 5:
                     tbodyTd.classList.add('td_actions');
+
                     // ** кнопка изменить
                     const btnChange = document.createElement('button');
                     btnChange.classList.add('btn', 'btn-primary');
@@ -265,6 +286,16 @@ function drawingTableOfClients(clientsList) {
                         inputValue[1].value = clientsList[i].name;
                         inputValue[2].value = clientsList[i].lastName;
                         document.getElementById('client-id-to-update').value = clientsList[i].id;
+
+                        // Очищаем таблицу контактов перед добавлением новых данных
+                        const contactsTableUpdate = document.querySelector('table#contacts-list-update-dialog tbody');
+                        contactsTableUpdate.innerHTML = '';
+
+                        // Добавляем данные контактов текущего клиента в таблицу
+                        clientsList[i].contacts.forEach(contact => {
+                            addContactToList('table#contacts-list-update-dialog tbody', 'contact-tr-update', 
+                            contact.type, contact.value);
+                        });
                     });
 
                     // ** кнопка удалить
